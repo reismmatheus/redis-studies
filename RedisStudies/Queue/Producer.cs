@@ -1,14 +1,16 @@
 ﻿using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace RedisStudies.Queue
 {
-    public class Consumer
+    public class Producer
     {
         private readonly string _connString;
         private readonly string _queueKey;
-        public Consumer(string connString, string queueKey)
+        public Producer(string connString, string queueKey)
         {
             _connString = connString;
             _queueKey = queueKey;
@@ -20,13 +22,16 @@ namespace RedisStudies.Queue
 
             var database = conn.GetDatabase();
 
-            while (database.ListLength(_queueKey) > 0)
+            for (int i = 0; i < 50; i++)
             {
-                var data = database.ListRightPop(_queueKey);
-
-                Console.WriteLine($"{DateTime.UtcNow:o} - {data}");
-
-                Thread.Sleep(100);
+                var value = $@"
+                {{
+                    order: {i},
+                    request: []
+                }}
+                ";
+                database.ListLeftPush(_queueKey, value);
+                Console.WriteLine($"{DateTime.UtcNow:o} - {i}");
             }
         }
     }
