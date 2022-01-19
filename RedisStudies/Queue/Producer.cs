@@ -16,7 +16,7 @@ namespace RedisStudies.Queue
             _queueKey = queueKey;
         }
 
-        public void Pop()
+        public void Push()
         {
             var conn = ConnectionMultiplexer.Connect(_connString);
 
